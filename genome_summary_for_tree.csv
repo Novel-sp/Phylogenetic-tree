@@ -1,0 +1,17 @@
+Assembly,# contigs,Total length,GC (%),Largest contig,N50,L50,Completeness,Contamination,Domain,Phylum,Class,Order,Family,Genus,Species,Outgroup,HMM
+8132433368,5,2064519,58.44,1472116,1472116,1,100,0,Bacteria,Actinomycetota,Actinomycetia,Actinomycetales,Micrococcaceae,Rothia,,GCA_015751895.1,Actinobacteria
+8132450495,15,2698587,71.28,1126649,430217,2,100,0.14,Bacteria,Actinomycetota,Actinomycetia,Actinomycetales,Micrococcaceae,Kocuria,Kocuria rhizophila,GCA_015751895.1,Actinobacteria
+8132503709,25,2461442,32.57,611055,179336,4,99.99,0.05,Bacteria,Bacillota,Bacilli,Staphylococcales,Staphylococcaceae,Staphylococcus,Staphylococcus warneri,GCA_016028795.1,Firmicutes
+8132551458,43,6378650,63.34,1036071,310933,7,99.99,0.2,Bacteria,Pseudomonadota,Gammaproteobacteria,Burkholderiales,Burkholderiaceae,Ralstonia,Ralstonia sp001078575,GCA_009586235.1,Proteobacteria
+8132595571,35,6194009,63.38,739619,310704,7,99.99,0.6,Bacteria,Pseudomonadota,Gammaproteobacteria,Burkholderiales,Burkholderiaceae,Ralstonia,Ralstonia sp001078575,GCA_009586235.1,Proteobacteria
+8132601599,30,6122548,63.39,952311,312738,6,99.99,0.34,Bacteria,Pseudomonadota,Gammaproteobacteria,Burkholderiales,Burkholderiaceae,Ralstonia,Ralstonia sp001078575,GCA_009586235.1,Proteobacteria
+8132818425,29,6123168,63.39,952311,312739,6,99.99,0.34,Bacteria,Pseudomonadota,Gammaproteobacteria,Burkholderiales,Burkholderiaceae,Ralstonia,Ralstonia sp001078575,GCA_009586235.1,Proteobacteria
+8132824355,30,6123255,63.39,739619,312738,6,99.98,0.34,Bacteria,Pseudomonadota,Gammaproteobacteria,Burkholderiales,Burkholderiaceae,Ralstonia,Ralstonia sp001078575,GCA_009586235.1,Proteobacteria
+8133341747,10,1856643,41.1,662270,326615,2,100,0.04,Bacteria,Bacillota,Bacilli,Lactobacillales,Streptococcaceae,Streptococcus,Streptococcus sp002355895,GCA_016766815.1,Firmicutes
+8133476785,7,2481891,64.94,1177947,512932,2,100,0.17,Bacteria,Pseudomonadota,Alphaproteobacteria,Sphingomonadales,Sphingomonadaceae,Sphingomicrobium,,GCA_000013085.1,Proteobacteria
+8133623617,30,6123255,63.39,739619,312738,6,99.98,0.34,Bacteria,Pseudomonadota,Gammaproteobacteria,Burkholderiales,Burkholderiaceae,Ralstonia,Ralstonia sp001078575,GCA_009586235.1,Proteobacteria
+8133629549,30,6123255,63.39,739619,312738,6,99.98,0.34,Bacteria,Pseudomonadota,Gammaproteobacteria,Burkholderiales,Burkholderiaceae,Ralstonia,Ralstonia sp001078575,GCA_009586235.1,Proteobacteria
+8133635480,29,6123160,63.39,739619,312738,6,99.98,0.34,Bacteria,Pseudomonadota,Gammaproteobacteria,Burkholderiales,Burkholderiaceae,Ralstonia,Ralstonia sp001078575,GCA_009586235.1,Proteobacteria
+8133643943,41,5477084,68.43,492023,343010,7,100,0.01,Bacteria,Pseudomonadota,Alphaproteobacteria,Rhizobiales,Beijerinckiaceae,Methylobacterium,Methylobacterium extorquens, GCA_016584445.1,Proteobacteria
+8133992572,56,2195898,31.23,178490,61022,13,100,0.05,Bacteria,Bacillota,Bacilli,Staphylococcales,Staphylococcaceae,Staphylococcus,,GCA_016028795.1,Firmicutes
+8134898396,20,2454146,32.5,568068,394295,3,100,0.08,Bacteria,Bacillota,Bacilli,Staphylococcales,Staphylococcaceae,Staphylococcus,Staphylococcus warneri,GCA_016028795.1,Firmicutes

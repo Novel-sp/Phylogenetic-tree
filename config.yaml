@@ -1,0 +1,54 @@
+###############################################################################
+# Configuration file for phylogenetic tree workflow
+#
+# This file defines all input and output paths used across the Snakefiles.
+# Users should only edit values in this file when running the workflow
+# on a different system or dataset.
+###############################################################################
+
+# ---------------------------------------------------------------------------
+# Genome summary file
+# ---------------------------------------------------------------------------
+# CSV file generated from upstream analysis.
+# Must contain columns such as:
+# - Genus
+# - Assembly
+# - HMM
+# - Outgroup
+#
+# This file drives all downstream grouping and phylogenetic steps.
+genome_summary: "path/to/genome_summary_for_tree.csv"
+
+# ---------------------------------------------------------------------------
+# Input genome directory
+# ---------------------------------------------------------------------------
+# Directory containing FASTA files of genomes to be included in the tree.
+# Filenames must match the "Assembly" entries in the genome summary file
+# (after cleaning).
+input_dir: "path/to/potential_novel_genomes_fasta"
+
+# ---------------------------------------------------------------------------
+# GCF ID directory
+# ---------------------------------------------------------------------------
+# Directory containing one file per genus named:
+#   <Genus>_final_GCF.txt
+#
+# Each file should list GCF accessions used by GToTree.
+gcf_ids_dir: "path/to/GCF_ids"
+
+# ---------------------------------------------------------------------------
+# Results directory
+# ---------------------------------------------------------------------------
+# Base output directory for all workflow results.
+# The workflow will automatically create subdirectories per genus.
+results_dir: "path/to/results/directory"
+
+# ---------------------------------------------------------------------------
+# NCBI API key
+# ---------------------------------------------------------------------------
+# Optional but strongly recommended for faster and more reliable downloads
+# when using NCBI datasets.
+#
+# If not provided, downloads may be slower or rate-limited.
+ncbi_api_key: "cf29fd341b7875edbbadfa038334368f8808"
+

@@ -1,0 +1,129 @@
+###############################################################################
+# Snakefile: Run GToTree per genus
+#
+# This workflow:
+# 1. Reads the genome summary CSV
+# 2. Maps each genus to its corresponding HMM file
+# 3. Runs GToTree independently for each genus
+# 4. Uses a ".done" file to mark successful completion
+#
+# ASSUMPTIONS:
+# - The previous Snakefile has already:
+#   • Grouped genomes by genus
+#   • Downloaded outgroups
+#   • Created *_fasta_files.txt and *_final_GCF.txt per genus
+# - All required paths are defined in config.yaml
+###############################################################################
+
+import pandas as pd
+import os
+
+# ---------------------------------------------------------------------------
+# Load configuration file
+# ---------------------------------------------------------------------------
+# Snakemake reads config.yaml and exposes values via the `config` dictionary
+configfile: "config.yaml"
+
+# ---------------------------------------------------------------------------
+# Read required paths from config.yaml
+# ---------------------------------------------------------------------------
+RESULTS_DIR = config["results_dir"]     # Base results directory
+SUMMARY_FILE = config["genome_summary"] # Genome summary CSV
+
+# ---------------------------------------------------------------------------
+# Load genome summary file
+# ---------------------------------------------------------------------------
+# This file must contain at least:
+# - Genus
+# - HMM (path to the HMM file used by GToTree)
+genomes_df = pd.read_csv(SUMMARY_FILE)
+
+# ---------------------------------------------------------------------------
+# Build a mapping of genus → HMM
+# ---------------------------------------------------------------------------
+# One HMM is expected per genus
+hmm_map = (
+    genomes_df
+    .drop_duplicates(subset=["Genus"])
+    .set_index("Genus")["HMM"]
+    .to_dict()
+)
+
+# ---------------------------------------------------------------------------
+# Extract the list of genera to process
+# ---------------------------------------------------------------------------
+# Each genus will be processed independently by GToTree
+GENERA = list(hmm_map.keys())
+
+#############################################
+# Rule: all
+#############################################
+# Entry point for the workflow
+# Ensures GToTree has successfully completed for every genus
+rule all:
+    input:
+        expand(
+            os.path.join(RESULTS_DIR, "{genus}", "{genus}_GToTree.done"),
+            genus=GENERA
+        )
+
+#############################################
+# Rule: run_gtotree
+#############################################
+# Runs GToTree for a single genus
+#
+# Inputs:
+# - A text file listing all FASTA/FNA files for the genus
+# - A text file listing GCF accessions for reference genomes
+#
+# Output:
+# - A ".done" file used as a completion marker
+#############################################
+rule run_gtotree:
+    input:
+        # List of genome FASTA/FNA files for this genus
+        fasta_list=lambda w: os.path.join(
+            RESULTS_DIR,
+            w.genus,
+            f"{w.genus}_fasta_files.txt"
+        ),
+
+        # List of GCF accessions for this genus
+        accessions=lambda w: os.path.join(
+            RESULTS_DIR,
+            w.genus,
+            f"{w.genus}_final_GCF.txt"
+        ),
+    output:
+        # Marker file indicating successful GToTree execution
+        touch(os.path.join(
+            RESULTS_DIR,
+            "{genus}",
+            "{genus}_GToTree.done"
+        ))
+    params:
+        # HMM file specific to this genus
+        hmm=lambda w: hmm_map[w.genus],
+
+        # Output directory for GToTree results
+        outdir=lambda w: os.path.join(
+            RESULTS_DIR,
+            f"{w.genus}_GToTree"
+        )
+    conda:
+        # Conda environment containing GToTree and dependencies
+        "./envs/gtotree.yaml"
+    shell:
+        r"""
+        # Move into the genus-specific results directory
+        cd {RESULTS_DIR}/{wildcards.genus}
+
+        # Run GToTree
+        GToTree \
+          -a {input.accessions} \
+          -f {input.fasta_list} \
+          -H {params.hmm} \
+          -j 4 \
+          -o {params.outdir}
+        """
+

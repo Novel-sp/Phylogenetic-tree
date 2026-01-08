@@ -1,0 +1,7 @@
+name: gtotree
+channels:
+  - conda-forge
+  - bioconda
+  - astrobiomike  # Added the missing channel
+dependencies:
+  - gtotree

@@ -1,0 +1,234 @@
+###############################################################################
+# Snakefile: Genome grouping and preparation for phylogenetic analysis
+#
+# This workflow:
+# 1. Reads a genome summary CSV
+# 2. Groups genomes by genus
+# 3. Copies genome FASTA files into genus-specific folders
+# 4. Downloads outgroup genomes from NCBI (with GCF → GCA fallback)
+# 5. Copies final GCF ID lists
+# 6. Creates a text file listing all FASTA/FNA files per genus
+#
+# IMPORTANT:
+# - This file assumes all paths and filenames are defined in config.yaml
+# - The genome_summary CSV is the central driver of the workflow
+###############################################################################
+
+import pandas as pd
+import os
+
+# ---------------------------------------------------------------------------
+# Load the configuration file
+# ---------------------------------------------------------------------------
+# Snakemake automatically loads variables from this YAML into the `config` dict
+configfile: "config.yaml"
+
+# ---------------------------------------------------------------------------
+# Read key paths from the config file
+# ---------------------------------------------------------------------------
+RESULTS_DIR = config['results_dir']        # Base output directory
+INPUT_DIR = config['input_dir']            # Directory containing input FASTA files
+SUMMARY_FILE = config['genome_summary']    # Genome summary CSV file
+GCF_IDS_DIR = config['gcf_ids_dir']         # Directory containing *_final_GCF.txt files
+
+# ---------------------------------------------------------------------------
+# Load the genome summary table
+# ---------------------------------------------------------------------------
+# This file is expected to contain at least:
+# - Genus
+# - Assembly
+# - HMM
+# - Outgroup
+genomes_df = pd.read_csv(SUMMARY_FILE)
+
+# ---------------------------------------------------------------------------
+# CLEANING STEP
+# ---------------------------------------------------------------------------
+# Strip whitespace from key user-entered columns to avoid subtle bugs caused
+# by trailing spaces, tabs, or inconsistent formatting
+for col in ["HMM", "Outgroup", "Genus", "Assembly"]:
+    if col in genomes_df.columns:
+        genomes_df[col] = genomes_df[col].astype(str).str.strip()
+
+# ---------------------------------------------------------------------------
+# Create a safe filename stem from the Assembly column
+# ---------------------------------------------------------------------------
+# Removes any characters that could break file paths or Snakemake wildcards
+genomes_df['file_stem'] = (
+    genomes_df['Assembly']
+    .astype(str)
+    .str.replace(r'[^a-zA-Z0-9_.]', '', regex=True)
+)
+
+# ---------------------------------------------------------------------------
+# Build lookup dictionaries used throughout the workflow
+# ---------------------------------------------------------------------------
+
+# Map each genus → list of genome file stems
+genus_map = (
+    genomes_df
+    .groupby('Genus')['file_stem']
+    .apply(list)
+    .to_dict()
+)
+
+# Map each genus → HMM (one per genus)
+hmm_map = (
+    genomes_df
+    .drop_duplicates(subset=['Genus'])
+    .set_index('Genus')['HMM']
+    .to_dict()
+)
+
+# Map each genus → outgroup accession (GCF/GCA)
+outgroup_map = (
+    genomes_df
+    .drop_duplicates(subset=['Genus'])
+    .set_index('Genus')['Outgroup']
+    .to_dict()
+)
+
+# ---------------------------------------------------------------------------
+# Define all expected final output files for the workflow
+# ---------------------------------------------------------------------------
+# This list drives the `rule all` target
+target_files = []
+
+for genus, genome_list in genus_map.items():
+
+    # Add all input genomes copied into genus-specific folders
+    for genome in genome_list:
+        target_files.append(
+            os.path.join(RESULTS_DIR, genus, f"{genome}.fasta")
+        )
+
+    # Add the downloaded outgroup genome, if defined
+    outgroup_id = outgroup_map.get(genus)
+    if outgroup_id:
+        target_files.append(
+            os.path.join(RESULTS_DIR, genus, f"{outgroup_id}.fna")
+        )
+
+    # Add the copied GCF ID list
+    target_files.append(
+        os.path.join(RESULTS_DIR, genus, f"{genus}_final_GCF.txt")
+    )
+
+    # Add the text file listing all FASTA/FNA files for the genus
+    target_files.append(
+        os.path.join(RESULTS_DIR, genus, f"{genus}_fasta_files.txt")
+    )
+
+# ---------------------------------------------------------------------------
+# Main Snakemake entry point
+# ---------------------------------------------------------------------------
+# Ensures that all expected files are generated
+rule all:
+    input:
+        target_files
+
+# ---------------------------------------------------------------------------
+# Rule: group_by_genus
+# ---------------------------------------------------------------------------
+# Copies each genome FASTA file into its corresponding genus directory
+rule group_by_genus:
+    input:
+        fasta = os.path.join(INPUT_DIR, "{genome}.fasta"),
+        summary = SUMMARY_FILE
+    output:
+        os.path.join(RESULTS_DIR, "{genus}", "{genome}.fasta")
+    run:
+        # Identify the genus for the current genome using the summary table
+        genome_name = wildcards.genome
+        genus_name = (
+            genomes_df
+            .loc[genomes_df['file_stem'] == genome_name, 'Genus']
+            .iloc[0]
+        )
+
+        # Create the genus directory if it does not exist
+        os.makedirs(os.path.dirname(output[0]), exist_ok=True)
+
+        # Copy the FASTA file into the genus-specific folder
+        shell("cp {input.fasta} {output}")
+
+# ---------------------------------------------------------------------------
+# Rule: download_outgroup
+# ---------------------------------------------------------------------------
+# Downloads the outgroup genome from NCBI using `datasets`
+# - Tries the provided accession first
+# - If it starts with GCF and fails, retries using GCA
+rule download_outgroup:
+    input:
+        summary = SUMMARY_FILE
+    output:
+        os.path.join(RESULTS_DIR, "{genus}", "{outgroup}.fna")
+    params:
+        assembly_id = lambda wildcards: outgroup_map.get(wildcards.genus),
+        outdir = lambda wildcards, output: os.path.dirname(output[0])
+    conda:
+        "./envs/ncbi_datasets.yaml"
+    shell:
+        """
+        outdir={params.outdir}
+        accession={params.assembly_id}
+
+        mkdir -p $outdir
+
+        # Attempt to download the specified accession
+        datasets download genome accession $accession --filename $outdir/ncbi_dataset.zip || \\
+        (
+            # If it starts with GCF, retry with GCA
+            [[ "$accession" == GCF* ]] && \
+            fallback=$(echo $accession | sed 's/GCF/GCA/') && \
+            datasets download genome accession $fallback --filename $outdir/ncbi_dataset.zip && \
+            accession=$fallback
+        )
+
+        # Extract only the genomic FASTA file
+        unzip -j $outdir/ncbi_dataset.zip 'ncbi_dataset/data/*_genomic.fna' -d $outdir
+
+        # Rename the downloaded FASTA to match the expected output
+        mv $outdir/*_genomic.fna {output}
+
+        # Clean up temporary files
+        rm -rf $outdir/ncbi_dataset \
+               $outdir/README.md \
+               $outdir/md5sum.txt \
+               $outdir/ncbi_dataset.zip
+        """
+
+# ---------------------------------------------------------------------------
+# Rule: copy_gcf_ids
+# ---------------------------------------------------------------------------
+# Copies the precomputed *_final_GCF.txt file into the genus directory
+rule copy_gcf_ids:
+    input:
+        source_file = os.path.join(GCF_IDS_DIR, "{genus}_final_GCF.txt"),
+    output:
+        os.path.join(RESULTS_DIR, "{genus}", "{genus}_final_GCF.txt")
+    shell:
+        "cp {input.source_file} {output}"
+
+# ---------------------------------------------------------------------------
+# Rule: list_fasta_files
+# ---------------------------------------------------------------------------
+# Generates a sorted text file listing all FASTA and FNA files for the genus
+rule list_fasta_files:
+    input:
+        genomes = lambda wildcards: [
+            os.path.join(RESULTS_DIR, wildcards.genus, f"{g}.fasta")
+            for g in genus_map.get(wildcards.genus)
+        ],
+        outgroup = lambda wildcards: os.path.join(
+            RESULTS_DIR,
+            wildcards.genus,
+            f"{outgroup_map.get(wildcards.genus)}.fna"
+        )
+    output:
+        os.path.join(RESULTS_DIR, "{genus}", "{genus}_fasta_files.txt")
+    params:
+        outdir = lambda wildcards, output: os.path.dirname(output[0])
+    shell:
+        "find {params.outdir} -maxdepth 1 -name '*.fasta' -o -name '*.fna' | sort > {output}"
+
