@@ -13,12 +13,12 @@ Prerequisites
 
 Required files in this module
 -----------------------------
-- `Env/` — environment YAML files for all tools used by this module. These files ensure reproducible runtime environments for each tool.
-- `Module3.sh` — entrypoint shell script. This runs Snakemake with the module's configuration and Snakefiles.
-- `config.yaml` — central configuration file. Edit this file before running to point at input/output directories, databases, thread counts, and whether to run IQ-TREE after GToTree.
-- `gtotree_snakefile` — Snakemake workflow that orchestrates the GToTree steps (input parsing, HMM selection, sequence retrieval/preparation, SCG calling, concatenation, and alignment).
-- `iqtree_snakefile` — Snakemake workflow that runs IQ-TREE on alignments produced by GToTree when IQ-TREE execution is enabled in `config.yaml`.
-- `tree_annotation.py` — script that generates per-genus annotation CSVs (for iTOL) from the genome summary.
+- `Env/` - environment YAML files for all tools used by this module. These files ensure reproducible runtime environments for each tool.
+- `Module3.sh` - entrypoint shell script. This runs Snakemake with the module's configuration and Snakefiles.
+- `config.yaml` - central configuration file. Edit this file before running to point at input/output directories, databases, thread counts, and whether to run IQ-TREE after GToTree.
+- `gtotree_snakefile` - Snakemake workflow that orchestrates the GToTree steps (input parsing, HMM selection, sequence retrieval/preparation, SCG calling, concatenation, and alignment).
+- `iqtree_snakefile` - Snakemake workflow that runs IQ-TREE on alignments produced by GToTree when IQ-TREE execution is enabled in `config.yaml`.
+- `tree_annotation.py` - script that generates per-genus annotation CSVs (for iTOL) from the genome summary.
 
 Input
 -----
@@ -26,8 +26,8 @@ Input
 - Required modifications to produce the module input:
   - Keep only rows corresponding to the genomes for which you want trees (ideally the novel species).
   - Add two columns to the end of the CSV in this order:
-    1. `Outroup` — the GCF id of the outgroup genome to use for each genome (user fills this).
-    2. `HMM` — the HMM group to use for each genome (user fills this). The available HMM group list is here: https://github.com/AstrobioMike/GToTree/wiki/SCG-sets
+    1. `Outroup` - the GCF id of the outgroup genome to use for each genome (user fills this).
+    2. `HMM` - the HMM group to use for each genome (user fills this). The available HMM group list is here: https://github.com/AstrobioMike/GToTree/wiki/SCG-sets
 - Save this file as `genome_summary_mod.csv` and make it available where `config.yaml` expects the input summary.
 
 Tools
@@ -88,4 +88,4 @@ Notes and constraints
 - The user must populate the `Outroup` and `HMM` columns in `genome_summary_mod.csv` before running this module.
 - This module assumes required databases for GToTree are present and their paths are correctly set in `config.yaml`.
 
-No changes were made to your code — this README documents the module and references the files already present so users can run Module 3 reliably and reproducibly.
+No changes were made to your code - this README documents the module and references the files already present so users can run Module 3 reliably and reproducibly.
