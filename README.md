@@ -86,7 +86,6 @@ Running this module
 Notes and constraints
 ---------------------
 - The user must populate the `Outroup` and `HMM` columns in `genome_summary_mod.csv` before running this module.
-- The HMM group names should match the HMM sets referenced by GToTree; see https://github.com/AstrobioMike/GToTree/wiki/SCG-sets.
 - This module assumes required databases for GToTree are present and their paths are correctly set in `config.yaml`.
 
 No changes were made to your code — this README documents the module and references the files already present so users can run Module 3 reliably and reproducibly.
