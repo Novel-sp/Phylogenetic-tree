@@ -30,12 +30,12 @@ Input
     2. `HMM` — the HMM group to use for each genome (user fills this). The available HMM group list is here: https://github.com/AstrobioMike/GToTree/wiki/SCG-sets
 - Save this file as `genome_summary_mod.csv` and make it available where `config.yaml` expects the input summary.
 
-Tools used (brief)
+Tools
 ------------------
 - GToTree: A reproducible phylogenomics workflow that identifies single-copy genes using HMM sets, extracts and aligns them, and produces concatenated alignments. GToTree is used here to standardize marker selection and alignment generation across genomes.
 - IQ-TREE: A fast, robust maximum-likelihood phylogeny inference program. When enabled, IQ-TREE will be run on the concatenated alignments produced by GToTree to produce ML trees with model selection and support values.
 
-Why these files / structure
+Why these files / structure?
 ---------------------------
 - `Env/` (environment YAMLs): Ensures each tool is run in a pinned environment to avoid dependency and reproducibility problems.
 - `Module3.sh`: A single, simple entrypoint so users can run the complete module without manually invoking Snakemake commands.
@@ -65,7 +65,7 @@ Output
   - If IQ-TREE is enabled, an additional results folder per genus containing IQ-TREE outputs (tree files, model selection, support values).
 - `annotation/` folder containing CSV files named by genus. Each CSV is formatted for iTOL and contains the annotation code for direct upload alongside the IQ-TREE-generated tree for visualization.
 
-What to do after this
+What to do after this?
 ---------------------
 - If you want to stop here: inspect the generated trees, use the annotation CSVs and tree files in iTOL for visualization and analysis.
 - If you want to continue to metagenome mapping: proceed to Module 4 of the toolkit (outside the scope of Module 3).
