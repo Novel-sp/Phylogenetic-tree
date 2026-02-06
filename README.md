@@ -60,8 +60,10 @@ Module 3 builds phylogenetic trees for the selected (novel) genomes using a repr
 ## Step-by-step instruction for running Module 3
 
 1.Clone or download this Module 3 directory:
+```bash
     git clone https://github.com/Novel-sp/Phylogenetic-tree.git
     cd Genome-related-indices/module3  # the directory where the module 3 is located
+```
 2.  Edit `config.yaml` and specify:
    - All input and database directories,
    - The output directory,
