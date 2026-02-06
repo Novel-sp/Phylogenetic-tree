@@ -107,3 +107,6 @@ Module 3 builds phylogenetic trees for the selected (novel) genomes using a repr
 - The user must populate the `Outroup` and `HMM` columns in `genome_summary_mod.csv` before running this module.
 - This module assumes required databases for GToTree are present and their paths are correctly set in `config.yaml`.
 
+### Citation
+
+Snakemake: Mölder et al. (2021). Sustainable data analysis with Snakemake. F1000Research, 10:33.
