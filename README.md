@@ -80,12 +80,26 @@ Running this module
 2. Make sure `genome_summary_mod.csv` (as described above) is available where `config.yaml` expects it.
 3. Open a terminal, activate the Snakemake environment, change to the module directory, and run:
 
+Quick run (from the module directory)
+   ```bash
+   # activate the snakemake conda environment
    conda activate snakemake
+
+   # ensure the entrypoint is executable (only needed once)
+   chmod +x Module3.sh
+
+   # run the module
    ./Module3.sh
+   ```
+   Alternatives:
+   - If you prefer not to change permissions, run with `bash`:
+     ```bash
+     conda activate snakemake
+     bash Module3.sh
+     ```
 
 Notes and constraints
 ---------------------
 - The user must populate the `Outroup` and `HMM` columns in `genome_summary_mod.csv` before running this module.
 - This module assumes required databases for GToTree are present and their paths are correctly set in `config.yaml`.
 
-No changes were made to your code - this README documents the module and references the files already present so users can run Module 3 reliably and reproducibly.
