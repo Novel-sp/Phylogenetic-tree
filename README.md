@@ -1,5 +1,4 @@
-# Module 3 - Phylogenetic-tree
-An automated phylogenomics workflow that utilizes GToTree for marker gene extraction and IQ-Tree for high-resolution Maximum Likelihood tree inference.
+## Module 3 - Phylogenetic-tree
 
 Overview 
 
@@ -10,6 +9,37 @@ Module 3 builds phylogenetic trees for the selected (novel) genomes using a repr
 - A working conda installation with a `snakemake` environment available.
 - The modified genome summary CSV described in the "Input" section below.
 - The module directory downloaded locally.
+
+## Step-by-step instruction for running Module 3
+
+1.Clone or download this Module 3 directory:
+```bash
+    git clone https://github.com/Novel-sp/Phylogenetic-tree.git
+    cd Genome-related-indices/module3  # the directory where the module 3 is located
+```
+2.  Edit `config.yaml` and specify:
+   - All input and database directories,
+   - The output directory,
+   - Number of threads/CPUs,
+   - Whether to run IQ-TREE after GToTree (true/false).
+3. Make sure `genome_summary_mod.csv` (as described above) is available where `config.yaml` expects it.
+4. Open a terminal, activate the Snakemake environment, change to the module directory, and run:
+   ```bash
+   # activate the snakemake conda environment
+   conda activate snakemake
+
+   # ensure the entrypoint is executable (only needed once)
+   chmod +x Module3.sh
+
+   # run the module
+   ./Module3.sh
+   ```
+   Alternatives:
+   - If you prefer not to change permissions, run with `bash`:
+     ```bash
+     conda activate snakemake
+     bash Module3.sh
+     ```
 
 ### Required files in this module
 
@@ -57,44 +87,14 @@ Module 3 builds phylogenetic trees for the selected (novel) genomes using a repr
    - If enabled in `config.yaml`, `iqtree_snakefile` runs IQ-TREE on produced alignments.
 3. `tree_annotation.py` generates per-genus annotation CSV files suitable for uploading to iTOL.
 
-## Step-by-step instruction for running Module 3
-
-1.Clone or download this Module 3 directory:
-```bash
-    git clone https://github.com/Novel-sp/Phylogenetic-tree.git
-    cd Genome-related-indices/module3  # the directory where the module 3 is located
-```
-2.  Edit `config.yaml` and specify:
-   - All input and database directories,
-   - The output directory,
-   - Number of threads/CPUs,
-   - Whether to run IQ-TREE after GToTree (true/false).
-3. Make sure `genome_summary_mod.csv` (as described above) is available where `config.yaml` expects it.
-4. Open a terminal, activate the Snakemake environment, change to the module directory, and run:
-   ```bash
-   # activate the snakemake conda environment
-   conda activate snakemake
-
-   # ensure the entrypoint is executable (only needed once)
-   chmod +x Module3.sh
-
-   # run the module
-   ./Module3.sh
-   ```
-   Alternatives:
-   - If you prefer not to change permissions, run with `bash`:
-     ```bash
-     conda activate snakemake
-     bash Module3.sh
-     ```
 
 ### Output
 
-- A top-level results folder (as configured in `config.yaml`) containing subfolders for each genus:
+- Results folder (as specified in `config.yaml`) containing subfolders for each genus:
   - One folder with the genus name that contains the files used to run GToTree (inputs and intermediate files).
   - A results folder per genus containing GToTree outputs (alignments, concatenated markers, logs).
   - If IQ-TREE is enabled, an additional results folder per genus containing IQ-TREE outputs (tree files, model selection, support values).
-- `annotation/` folder containing CSV files named by genus. Each CSV is formatted for iTOL and contains the annotation code for direct upload alongside the IQ-TREE-generated tree for visualization.
+  - `annotation/` folder containing CSV files named by genus. Each CSV is formatted for iTOL and contains the annotation code for direct upload alongside the IQ-TREE-generated tree for visualization.
 
 ### What to do after this?
 
