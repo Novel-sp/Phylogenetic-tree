@@ -24,22 +24,22 @@ Module 3 builds phylogenetic trees for the selected (novel) genomes using a repr
    - Whether to run IQ-TREE after GToTree (true/false).
 3. Make sure `genome_summary_mod.csv` (as described above) is available where `config.yaml` expects it.
 4. Open a terminal, activate the Snakemake environment, change to the module directory, and run:
-   ```bash
-   # activate the snakemake conda environment
+
+Activate the snakemake environment and run the module:
+```bash
    conda activate snakemake
-
-   # ensure the entrypoint is executable (only needed once)
+ ```  
+Run the module
+```bash
    chmod +x Module3.sh
-
-   # run the module
    ./Module3.sh
-   ```
+```
    Alternatives:
    - If you prefer not to change permissions, run with `bash`:
-     ```bash
+```bash
      conda activate snakemake
      bash Module3.sh
-     ```
+```
 
 #### Required files in this module
 
