@@ -15,7 +15,7 @@ Module 3 builds phylogenetic trees for the selected (novel) genomes using a repr
 1.Clone or download this Module 3 directory:
 ```bash
     git clone https://github.com/Novel-sp/Phylogenetic-tree.git
-    cd Genome-related-indices/module3  # the directory where the module 3 is located
+    cd Phylogenetic-tree  # the directory where the module 3 is located
 ```
 2.  Edit `config.yaml` and specify:
    - All input and database directories,
@@ -31,20 +31,20 @@ Activate the snakemake environment and run the module:
  ```  
 Run the module
 ```bash
-   chmod +x Module3.sh
-   ./Module3.sh
+   chmod +x Nose_Module3.sh
+   ./Nose_Module3.sh
 ```
    Alternatives:
    - If you prefer not to change permissions, run with `bash`:
 ```bash
      conda activate snakemake
-     bash Module3.sh
+     bash Nose_Module3.sh
 ```
 
 #### Required files in this module
 
 - `Env/` - environment YAML files for all tools used by this module. These files ensure reproducible runtime environments for each tool.
-- `Module3.sh` - entrypoint shell script. This runs Snakemake with the module's configuration and Snakefiles.
+- `Nose_Module3.sh` - entrypoint shell script. This runs Snakemake with the module's configuration and Snakefiles.
 - `config.yaml` - central configuration file. Edit this file before running to point at input/output directories, databases, thread counts, and whether to run IQ-TREE after GToTree.
 - `gtotree_snakefile` - Snakemake workflow that orchestrates the GToTree steps (input parsing, HMM selection, sequence retrieval/preparation, SCG calling, concatenation, and alignment).
 - `iqtree_snakefile` - Snakemake workflow that runs IQ-TREE on alignments produced by GToTree when IQ-TREE execution is enabled in `config.yaml`.
@@ -68,7 +68,7 @@ Run the module
 #### Why these files / structure?
 
 - `Env/` (environment YAMLs): Ensures each tool is run in a pinned environment to avoid dependency and reproducibility problems.
-- `Module3.sh`: A single, simple entrypoint so users can run the complete module without manually invoking Snakemake commands.
+- `Nose_Module3.sh`: A single, simple entrypoint so users can run the complete module without manually invoking Snakemake commands.
 - `config.yaml`: Centralizes all user-editable paths and runtime options (input, databases, output, threads, and whether to run IQ-TREE) so the workflow is reproducible and configurable.
 - `gtotree_snakefile` and `iqtree_snakefile`: Splitting the workflow into focused Snakefiles keeps GToTree preprocessing and IQ-TREE inference modular and easier to maintain or run independently.
 - `tree_annotation.py`: Produces iTOL-ready annotation CSVs per genus from `genome_summary_mod.csv`, enabling immediate visualization of trees together with metadata.
@@ -82,7 +82,7 @@ Run the module
    - Desired output directory
    - Number of threads / CPUs
    - Whether IQ-TREE should be run after GToTree
-2. `Module3.sh` is executed. It activates the Snakemake environment (user responsibility) and launches the Snakemake workflows:
+2. `Nose_Module3.sh` is executed. It activates the Snakemake environment (user responsibility) and launches the Snakemake workflows:
    - `gtotree_snakefile` runs GToTree steps for every genus / genome set.
    - If enabled in `config.yaml`, `iqtree_snakefile` runs IQ-TREE on produced alignments.
 3. `tree_annotation.py` generates per-genus annotation CSV files suitable for uploading to iTOL.
